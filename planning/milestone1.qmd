@@ -1,7 +1,8 @@
 ---
 title: "Milestone1"
-format: html
-editor: visual
+format: 
+  html:
+    embed-resources: true
 ---
 
 Names: Write down names of all team members Wesley Stone, Alan Schulz
@@ -21,16 +22,16 @@ library(tidyverse)
 ```
 
 ```{r}
-stonks1 <- read_csv("HistoricalData_1727474190073.csv")
-stonks2 <- read_csv("HistoricalData_1727474206036.csv")
-stonks3 <- read_csv("HistoricalData_1727474221394.csv")
-stonks4 <- read_csv("HistoricalData_1727474246245.csv")
-stonks5 <- read_csv("HistoricalData_1727474945219.csv")
-stonks6 <- read_csv("HistoricalData_1727474957879.csv")
-stonks7 <- read_csv("HistoricalData_1727474288120.csv")
-stonks8 <- read_csv("HistoricalData_1727474300447.csv")
-stonks9 <- read_csv("HistoricalData_1727474311890.csv")
-stonks10 <- read_csv("HistoricalData_1727474323497.csv")
+stonks1 <- read_csv("../data/HistoricalData_1727474190073.csv")
+stonks2 <- read_csv("../data/HistoricalData_1727474206036.csv")
+stonks3 <- read_csv("../data/HistoricalData_1727474221394.csv")
+stonks4 <- read_csv("../data/HistoricalData_1727474246245.csv")
+stonks5 <- read_csv("../data/HistoricalData_1727474945219.csv")
+stonks6 <- read_csv("../data/HistoricalData_1727474957879.csv")
+stonks7 <- read_csv("../data/HistoricalData_1727474288120.csv")
+stonks8 <- read_csv("../data/HistoricalData_1727474300447.csv")
+stonks9 <- read_csv("../data/HistoricalData_1727474311890.csv")
+stonks10 <- read_csv("../data/HistoricalData_1727474323497.csv")
 ```
 
 ```{r}
@@ -79,4 +80,3 @@ We will do some initial analysis of this data around potential anchor points, pr
 ```{r}
 sessionInfo()
 ```
-
