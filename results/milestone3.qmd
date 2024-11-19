@@ -25,6 +25,10 @@ Getting a good dataset was initially quite challenging. Because stock-market dat
 ```{r}
 head(dat_wider, 10)
 ```
+```{r}
+dat_wider_low <- dat_wider %>%
+  filter(!is.na(Low))
+```
 
 
 ## Analysis
@@ -32,7 +36,7 @@ head(dat_wider, 10)
 Measuring anchoring bias in the stock market is a little trickier than it sounds. We can't literally analyze how many shares were bought at specific prices, because that dataset would be mind-bogglingly huge, if we could somehow manage to find it. Instead, we had to use the best metric we have access to, which is daily lows. It's not perfect, because sometimes if a stock has a really rough day, the low might be the close, or vice versa, but generally speaking, the low is when people start to think that it is worth buying, and it begins to swing in the other direction. So, we simply counted how many lows were of each cent value, and plotted them.
 
 ```{r, include=FALSE}
-dat_rounded_low <- mutate(dat_wider, rounded=cut(Low - floor(Low), seq(0, 1, by=0.1), right=FALSE))
+dat_rounded_low <- mutate(dat_wider_low, rounded=cut(Low - floor(Low), seq(0, 1, by=0.1), right=FALSE))
 
 
 low_ranges <- dat_rounded_low %>% count(rounded) %>% filter(!is.na(rounded))
@@ -69,7 +73,10 @@ dat_wider %>%
 
 ## Takeaways
 
-These graphs are quite striking. The lows are far more clustered than they "should" be, considering that the differences are literally pocket change. The second graph is perhaps even too striking; the very high value at exactly 0 seems to indicate that some stocks might be recorded in this dataset without a cent value, which we will check out in the near future. But it doesn't seem like there's any reason why so many stocks have local minima at 50 cent values, or 20, or 60, except for the comfort of round numbers. And the fact that in both graphs the patterns are so regular implies that there are very real relationships in play here. For the rest of the semester, we will focus on refining and teasing out these relationships. Is there a similar trend considering dollar values instead of cents? Does this change depending on the size and location of the companies involved? Do we observe similar trends using other metrics, such as daily highs or closes? And is bias of any kind affecting our results? These are the questions we hope to answer moving forward.
+These graphs are quite striking. The lows are far more clustered than they "should" be, considering that the differences are literally pocket change. The second graph is perhaps even too striking; the very high value at exactly 0 seems to indicate that some stocks might be recorded in this dataset without a cent value, which we will check out in the near future. But it doesn't seem like there's any reason why so many stocks have local minima at particular values, except perhaps the proximity to rounded numbers. And the fact that in both graphs the patterns are so regular implies that there are very real relationships in play here. For the rest of the semester, we will focus on refining and teasing out these relationships. Is there a similar trend considering dollar values instead of cents? Does this change depending on the size and location of the companies involved? Do we observe similar trends using other metrics, such as daily highs or closes? And is bias of any kind affecting our results? These are the questions we hope to answer moving forward.
+
+
+
 
 ```{r}
 sessionInfo()
