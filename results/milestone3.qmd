@@ -15,7 +15,36 @@ library(ggplot2)
 For our COMP/STAT 212 semester project, we decided to investigate what is known as "anchoring bias" in the stock market. Broadly speaking, anchoring bias is when we base our judgments on certain numbers, "anchors", more because they are comfortable or convenient than that they are relevant to the decision at hand. For example, a study showed that when subjects were asked to estimate the percentage of African nations in the UN, their guesses were significantly different if they were first asked whether it was higher/lower than 10% versus 65% ([source](https://pmc.ncbi.nlm.nih.gov/articles/PMC6396698/)). In that case, the anchor was the first number they heard. What we are exploring is slightly different. At first, we wanted to focus on specific "nice" numbers, such as 10 or 100, or "unlucky" numbers such as 13, and see if trading activity changed markedly when stocks hit those potential anchors. However, our initial analysis deemed this was too sensitive to outliers. So instead, we pivoted to a slightly different, and more familiar, idea. You've probably noticed when you go into the store that most things aren't priced at an exact dollar value, but some number of dollars plus 99 cents. Personally, I've always thought this was a little ridiculous, but there is a measurable effect on people's perception of price at 4.99 vs 5. Surely, though, traders on the stock market are far too canny to fall for these marketing tricks, because there's so much more at stake. If a noticeable effect were observed, it could potentially be leveraged for great profit. Let's see what the data has to say.
 
 ```{r data}
-dat_wider <- read_csv('../data/long_data.csv')
+dat_wider <- read_csv('../data/long_data_sub.csv')
+```
+
+```{r}
+full_data <- read_csv('../data/long_data.csv')
+```
+
+```{r}
+volume_cat_big <- full_data_volume %>% 
+  group_by(stock_name) %>% 
+  summarize(med_volume = median(Volume)) %>% 
+  filter(med_volume > 10000000)
+```
+
+```{r}
+big_stock_data <- full_data %>% 
+  mutate(Size = ifelse(stock_name %in% volume_cat_big$stock_name, "big", "small"))
+```
+
+```{r}
+volume_cat_small <- full_data_volume %>% 
+  group_by(stock_name) %>% 
+  summarize(med_volume = median(Volume)) %>% 
+  filter(med_volume <= 1000000)
+```
+
+```{r}
+small_stock_data <- full_data %>% 
+  filter(stock_name %in% volume_cat_big$stock_name) %>%
+  filter(!is.na(Low))
 ```
 
 ## The Data
@@ -24,10 +53,6 @@ Getting a good dataset was initially quite challenging. Because stock-market dat
 
 ```{r}
 head(dat_wider, 10)
-```
-```{r}
-dat_wider_low <- dat_wider %>%
-  filter(!is.na(Low))
 ```
 
 
@@ -46,28 +71,88 @@ low_ranges_percent <- low_ranges %>%
 ```
 
 ```{r}
+price_cats <- c("0-0.9", "0.1-0.19", "0.2-0.29", "0.3-0.39", "0.4-0.49", "0.5-0.59", "0.6-0.69", "0.7-0.79", "0.8-0.89", "0.9-0.99")
 low_ranges %>% 
   ggplot() +
   geom_col(aes(x = rounded, y = n)) +
-  labs(x = "Price Range", y = "Recorded Lows") +
+  labs(title = "Anchoring Bias Visible in Cent Prices", x = "Cent Price", y = "Recorded Lows") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30)) +
+  scale_x_discrete(label = price_cats)
+```
+
+```{r}
+low_data <- big_stock_data %>%
+  mutate(Low = round(Low, 2)) %>%
+  mutate(Low = as.character(Low)) %>% 
+  mutate(low_cat = ifelse(str_detect(Low, "\\..$"), paste0(str_sub(Low, -1, -1), "0"), str_sub(Low, -2, -1))) %>%
+  mutate(low_cat = ifelse(str_detect(Low, "\\."), low_cat, 0)) %>%
+  group_by(low_cat) %>% 
+  count() %>% 
+  filter(!is.na(low_cat)) %>% 
+  mutate(low_cat = as.numeric(low_cat)/100)
+```
+
+```{r}
+big_stock_data %>%
+  # filter(stock_name == "MSFT") %>%
+  # filter(Size == "big") %>% 
+  mutate(Low = round(Low, 2)) %>%
+  # filter(Low < 500) %>% 
+  mutate(Low = as.character(Low)) %>% 
+  mutate(low_cat = ifelse(str_detect(Low, "\\..$"), paste0(str_sub(Low, -1, -1), "0"), str_sub(Low, -2, -1))) %>%
+  mutate(low_cat = ifelse(str_detect(Low, "\\."), low_cat, 0)) %>%
+  group_by(low_cat) %>% 
+  count() %>% 
+  filter(!is.na(low_cat)) %>% 
+  mutate(low_cat = as.numeric(low_cat)/100) %>% 
+  # filter(low_cat != 0) %>% 
+  # mutate(low_cat = as.character(low_cat)) %>% 
+  ggplot() +
+  geom_line(aes(x = low_cat, y = n)) +
+  labs(title = "", x = "Cent Price", y = "Recorded Lows") +
   theme_minimal()
 ```
 
 ```{r}
-dat_wider %>% 
-  mutate(Low = round(Low, 2)) %>% 
-  mutate(Low = as.character(Low)) %>% 
-  mutate(low_cat = ifelse(str_detect(Low, "\\..$"), paste0(str_sub(Low, -1, -1), "0"), str_sub(Low, -2, -1))) %>%
-  mutate(low_cat = ifelse(str_detect(Low, "\\."), low_cat, 0)) %>% 
-  group_by(low_cat) %>% 
+big_stock_data %>%
+  # filter(stock_name == "MSFT") %>%
+  filter(Size == "big") %>% 
+  mutate(High = round(High, 2)) %>%
+  # filter(Low < 500) %>% 
+  mutate(High = as.character(High)) %>% 
+  mutate(high_cat = ifelse(str_detect(High, "\\..$"), paste0(str_sub(High, -1, -1), "0"), str_sub(High, -2, -1))) %>%
+  mutate(high_cat = ifelse(str_detect(High, "\\."), high_cat, 0)) %>%
+  group_by(high_cat) %>% 
   count() %>% 
-  filter(!is.na(low_cat)) %>% 
-  mutate(low_cat = as.numeric(low_cat)) %>% 
-  # filter(low_cat < 10) %>% 
+  filter(!is.na(high_cat)) %>% 
+  mutate(high_cat = as.numeric(high_cat)/100) %>% 
+  # filter(low_cat != 0) %>% 
   # mutate(low_cat = as.character(low_cat)) %>% 
   ggplot() +
-  geom_line(aes(x = low_cat, y = n)) +
-  labs(x = "Cent Price", y = "Recorded Lows") +
+  geom_line(aes(x = high_cat, y = n)) +
+  labs(title = "", x = "Cent Price", y = "Recorded Highs") +
+  theme_minimal()
+```
+
+```{r}
+big_stock_data %>%
+  # filter(stock_name == "MSFT") %>%
+  # filter(Size == "big") %>% 
+  mutate(Close = round(Close, 2)) %>%
+  # filter(Low < 500) %>% 
+  mutate(Close = as.character(Close)) %>% 
+  mutate(close_cat = ifelse(str_detect(Close, "\\..$"), paste0(str_sub(Close, -1, -1), "0"), str_sub(Close, -2, -1))) %>%
+  mutate(close_cat = ifelse(str_detect(Close, "\\."), close_cat, 0)) %>%
+  group_by(close_cat) %>% 
+  count() %>% 
+  filter(!is.na(close_cat)) %>% 
+  mutate(close_cat = as.numeric(close_cat)/100) %>% 
+  # filter(low_cat != 0) %>% 
+  # mutate(low_cat = as.character(low_cat)) %>% 
+  ggplot() +
+  geom_line(aes(x = close_cat, y = n)) +
+  labs(title = "", x = "Cent Price", y = "Recorded Closes") +
   theme_minimal()
 ```
 
@@ -76,6 +161,12 @@ dat_wider %>%
 These graphs are quite striking. The lows are far more clustered than they "should" be, considering that the differences are literally pocket change. The second graph is perhaps even too striking; the very high value at exactly 0 seems to indicate that some stocks might be recorded in this dataset without a cent value, which we will check out in the near future. But it doesn't seem like there's any reason why so many stocks have local minima at particular values, except perhaps the proximity to rounded numbers. And the fact that in both graphs the patterns are so regular implies that there are very real relationships in play here. For the rest of the semester, we will focus on refining and teasing out these relationships. Is there a similar trend considering dollar values instead of cents? Does this change depending on the size and location of the companies involved? Do we observe similar trends using other metrics, such as daily highs or closes? And is bias of any kind affecting our results? These are the questions we hope to answer moving forward.
 
 
+## Things to improve
+
+-Storytelling -- graphs need to be clearer
+-Parsimony in code -- separate data compilation from visualization (which will make shiny much easier)
+-Adding interactive viz for maximum utility/comparative potential
+-Incorporate time somehow?
 
 
 ```{r}
