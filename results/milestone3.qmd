@@ -8,6 +8,8 @@ format:
 ```{r packages, include=FALSE}
 library(tidyverse)
 library(ggplot2)
+library(shiny)
+library(plotly)
 ```
 
 ## Introduction
@@ -23,15 +25,7 @@ full_data <- read_csv('../data/long_data.csv')
 ```
 
 ```{r}
-volume_cat_big <- full_data_volume %>% 
-  group_by(stock_name) %>% 
-  summarize(med_volume = median(Volume)) %>% 
-  filter(med_volume > 10000000)
-```
-
-```{r}
-big_stock_data <- full_data %>% 
-  mutate(Size = ifelse(stock_name %in% volume_cat_big$stock_name, "big", "small"))
+finished_data <- read.csv("../data/finished_data.csv")
 ```
 
 ```{r}
@@ -42,9 +36,14 @@ volume_cat_small <- full_data_volume %>%
 ```
 
 ```{r}
-small_stock_data <- full_data %>% 
-  filter(stock_name %in% volume_cat_big$stock_name) %>%
-  filter(!is.na(Low))
+small_stock_data <- big_stock_data %>% 
+  filter(stock_name %in% volume_cat_big$stock_name)
+```
+
+```{r}
+small_stock_data %>% 
+  group_by(stock_name) %>% 
+  count()
 ```
 
 ## The Data
@@ -115,20 +114,15 @@ big_stock_data %>%
 ```
 
 ```{r}
-big_stock_data %>%
-  # filter(stock_name == "MSFT") %>%
+big_stock_data <- big_stock_data %>%
   filter(Size == "big") %>% 
   mutate(High = round(High, 2)) %>%
-  # filter(Low < 500) %>% 
   mutate(High = as.character(High)) %>% 
   mutate(high_cat = ifelse(str_detect(High, "\\..$"), paste0(str_sub(High, -1, -1), "0"), str_sub(High, -2, -1))) %>%
   mutate(high_cat = ifelse(str_detect(High, "\\."), high_cat, 0)) %>%
   group_by(high_cat) %>% 
   count() %>% 
-  filter(!is.na(high_cat)) %>% 
   mutate(high_cat = as.numeric(high_cat)/100) %>% 
-  # filter(low_cat != 0) %>% 
-  # mutate(low_cat = as.character(low_cat)) %>% 
   ggplot() +
   geom_line(aes(x = high_cat, y = n)) +
   labs(title = "", x = "Cent Price", y = "Recorded Highs") +
@@ -136,30 +130,74 @@ big_stock_data %>%
 ```
 
 ```{r}
-big_stock_data %>%
-  # filter(stock_name == "MSFT") %>%
-  # filter(Size == "big") %>% 
-  mutate(Close = round(Close, 2)) %>%
-  # filter(Low < 500) %>% 
-  mutate(Close = as.character(Close)) %>% 
-  mutate(close_cat = ifelse(str_detect(Close, "\\..$"), paste0(str_sub(Close, -1, -1), "0"), str_sub(Close, -2, -1))) %>%
-  mutate(close_cat = ifelse(str_detect(Close, "\\."), close_cat, 0)) %>%
-  group_by(close_cat) %>% 
-  count() %>% 
-  filter(!is.na(close_cat)) %>% 
-  mutate(close_cat = as.numeric(close_cat)/100) %>% 
-  # filter(low_cat != 0) %>% 
-  # mutate(low_cat = as.character(low_cat)) %>% 
-  ggplot() +
-  geom_line(aes(x = close_cat, y = n)) +
-  labs(title = "", x = "Cent Price", y = "Recorded Closes") +
-  theme_minimal()
+metrics <- c("Open", "High", "Low", "Close", "Adj.Close")
+
+for(metric in metrics) {
+  label <- str_c(metric, "_cat")
+  big_stock_data <- big_stock_data %>%
+    mutate({{metric}} := round(!!sym(metric), 2)) %>%
+    mutate({{metric}} := as.character(!!sym(metric))) %>%
+    mutate({{label}} := ifelse(str_detect(!!sym(metric), "\\..$"), paste0(str_sub(!!sym(metric), -1, -1), "0"), str_sub(!!sym(metric), -2, -1))) %>%
+    mutate({{label}} := ifelse(str_detect(!!sym(metric), "\\."), !!sym(label), 0))
+}
 ```
 
 ## Takeaways
 
 These graphs are quite striking. The lows are far more clustered than they "should" be, considering that the differences are literally pocket change. The second graph is perhaps even too striking; the very high value at exactly 0 seems to indicate that some stocks might be recorded in this dataset without a cent value, which we will check out in the near future. But it doesn't seem like there's any reason why so many stocks have local minima at particular values, except perhaps the proximity to rounded numbers. And the fact that in both graphs the patterns are so regular implies that there are very real relationships in play here. For the rest of the semester, we will focus on refining and teasing out these relationships. Is there a similar trend considering dollar values instead of cents? Does this change depending on the size and location of the companies involved? Do we observe similar trends using other metrics, such as daily highs or closes? And is bias of any kind affecting our results? These are the questions we hope to answer moving forward.
 
+Data on eruptions of the Old Faithful geyser in Yellowstone National Park,
+Wyoming, USA. The data was collected continuously from August 1st until
+August 15th, 1985.
+
+```{r}
+stock_names <- big_stock_data %>% filter(Size == "big") %>% pull(stock_name) %>% unique()
+  
+selectInput("stock_names", "Stock:", choices = stock_names)
+selectInput("metrics", "Metric:", choices = metrics)
+
+plotlyOutput("linePlot")
+plotlyOutput("barPlot")
+```
+
+The data consists of 299 pairs of measurements, referring to the time interval
+between the starts of successive eruptions and the duration of the subsequent
+eruption.
+
+Click the **Code** button above to see the source code for this example.
+
+```{r}
+label <- "High_cat"
+big_stock_data %>%
+  filter(Size == "big") %>% 
+  group_by(!!sym(label)) %>% 
+  count() %>% 
+  mutate({{label}} := as.numeric(!!sym(label))/100) %>% 
+  ggplot() +
+  geom_line(aes(x = !!sym(label), y = n)) +
+  labs(title = "", x = "Cent Price", y = "Recorded Closes") +
+  theme_minimal()
+```
+
+
+```{r}
+#| context: server
+
+output$linePlot <- renderPlotly({
+  label <- str_c(input$metrics, "_cat")
+  # assign ytitle here?
+  p <- big_stock_data %>%
+    filter(Size == "big") %>% 
+    group_by(!!sym(label)) %>% 
+    count() %>% 
+    mutate({{label}} := as.numeric(!!sym(label))/100) %>% 
+    ggplot() +
+    geom_line(aes(x = !!sym(label), y = n)) +
+    labs(title = "", x = "Cent Price", y = str_c("Recorded ", input$metrics, "s")) +
+    theme_minimal()
+  ggPlotly(p)
+})
+```
 
 ## Things to improve
 

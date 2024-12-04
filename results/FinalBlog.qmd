@@ -1,0 +1,76 @@
+---
+title: "Final Project Blog"
+format: html
+runtime: shiny
+editor: visual
+---
+
+```{r setup, message=FALSE, echo=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(shiny)
+library(plotly)
+```
+
+```{r data, message=FALSE, echo=FALSE}
+finished_data <- read.csv("../data/finished_data.csv")
+```
+
+## Intro, initial graphs, and analysis
+
+This will be the main storytelling component of our project.
+
+## Shiny
+
+To enable user analysis of these trends, we created an interactive shiny app allowing readers to view a graph of the company and metric of their choice.
+
+```{r shiny, message=FALSE, echo=FALSE}
+# Grab the input vectors we need
+metrics <- c("Open", "High", "Low", "Close", "Adj.Close")
+stock_names <- finished_data %>% filter(Size == "big") %>% pull(stock_name) %>% unique() %>% sort() # For now, only the biggest companies are included as options, to keep the dropdown manageable
+
+# Define UI
+ui <- fluidPage(
+
+    # Application title
+    titlePanel("Stock Data Visualization"),
+
+    # Dropdowns to enable user input 
+    sidebarLayout(
+        sidebarPanel(
+          selectInput("stock_names",
+                      "Stock:",
+                      choices = stock_names),
+          selectInput("metrics",
+                      "Metric:",
+                      choices = metrics)
+        ),
+
+        # Show a plot of the generated distribution
+        mainPanel(
+           plotlyOutput("linePlot")
+        )
+    )
+)
+
+# Define server logic required to draw line graph
+server <- function(input, output) {
+
+  output$linePlot <- renderPlotly({
+    label <- str_c(input$metrics, "_cat") # Dynamic column reference
+    p <- finished_data %>%
+      filter(stock_name == input$stock_names) %>% # Filter to the chosen stock's data
+      group_by(!!sym(label)) %>% 
+      count() %>% 
+      mutate({{label}} := as.numeric(!!sym(label))/100) %>% # This weird syntax is necessary because R treats the dynamic label as a string, rather than a column name
+      ggplot() +
+      geom_line(aes(x = !!sym(label), y = n)) +
+      labs(title = "", x = "Cent Price", y = str_c("Recorded ", input$metrics, "s")) + # Dynamic axis labeling
+      theme_minimal()
+    ggplotly(p)
+  })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+```
