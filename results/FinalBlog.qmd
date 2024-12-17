@@ -17,7 +17,6 @@ library(tidyquant)
 
 ```{r data, message=FALSE, echo=FALSE}
 finished_data <- read.csv("../data/finished_data.csv")
-modified_data <- read.csv('../data/modified_data.csv')
 ```
 
 ## Driving Question
@@ -97,9 +96,9 @@ First, we divided all stocks into five categories according to their median volu
 ```{r, echo=FALSE, message=FALSE}
 finished_data$Date <- as.Date(finished_data$Date, format = "%Y-%m-%d")  # Ensure the format is "yyyy-mm-dd"
 
-modified_data$Date <- as.Date(modified_data$Date, format = "%Y-%m-%d")  # Ensure the format is "yyyy-mm-dd"
+finished_data$Date <- as.Date(finished_data$Date, format = "%Y-%m-%d")  # Ensure the format is "yyyy-mm-dd"
 
-modified_data$volume_range <- factor(modified_data$volume_range, 
+finished_data$volume_range <- factor(finished_data$volume_range, 
                       levels = c("0-10 thousand", "10 thousand-100 thousand", "100 thousand-1 million", "1 million-10 million", "Above 10 million"))
 
 # Grab the input vectors we need
@@ -130,18 +129,18 @@ ui <- fluidPage(
     sidebarPanel(
       selectInput("volume_range",
                   "Volume Range:",
-                  choices = unique(modified_data$volume_range),
-                  selected = unique(modified_data$volume_range)[1]),
+                  choices = unique(finished_data$volume_range),
+                  selected = unique(finished_data$volume_range)[1]),
       selectInput("metrics",
                   "Metric:",
                   choices = metrics),
       dateRangeInput("date_range",
                      "Date Range:",
-                     start = min(modified_data$Date),
-                     end = max(modified_data$Date),
+                     start = min(finished_data$Date),
+                     end = max(finished_data$Date),
                      format = "yyyy-mm-dd",
-                     min = min(modified_data$Date),
-                     max = max(modified_data$Date),
+                     min = min(finished_data$Date),
+                     max = max(finished_data$Date),
                      separator = " to ")
     ),
    
@@ -159,7 +158,7 @@ server <- function(input, output) {
     label <- str_c(input$metrics, "_cat") # Dynamic column reference
    
     # Filter data based on stock name and date range
-    p <- modified_data %>%
+    p <- finished_data %>%
       filter(volume_range == input$volume_range,
              Date >= input$date_range[1] & Date <= input$date_range[2]) %>% # Filter by date range
       group_by(!!sym(label)) %>%
