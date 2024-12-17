@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.4.555">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -105,17 +105,17 @@ ul.task-list li input[type="checkbox"] {
 <p>These graphs present compelling evidence of anchoring bias. There are high peaks at 0 and 50 cents, as well as other round numbers such as multiples of 10 and 25.</p>
 <p>If we look closer, another insight we get from these graphs is highs and lows both peak at rounded cent values, but they behave slightly different on how they approach to that peak. When approaching a daily high, traders keep buying until it reaches the 0 value, with lots of trades ending at 99 cents. Instead, when approaching a daily low, traders will buy at .01 and stop buying at .99. This behavior further reinforces the trend, as these barriers act as as support and tension price points.</p>
 <p>However, one of the concerns we had was that low volume stocks were driving this behavior. For example, some stocks can be as pricey as $200,000, and those stocks are usually traded at rounded numbers and by very few individuals. Thus, we created two interactive shiny apps to allow users to view the trends of their choice.</p>
-<p>First, we divided all stocks into five categories according to their median volume of daily trades. Higher volume stocks are less likely to be only traded in dollar amounts, so those might present a “purer” sample to observe anchoring. The user can explore the company size, metric and date of their choice.</p>
+<p>First, we divided all stocks into five categories according to their median volume of daily trades. The user can explore the company size, metric and date of their choice.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><iframe data-deferred-src="app0a609bf8d3c3c4fe7d07aab6608983c8/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
+<p><iframe data-deferred-src="appa715852b3be00e83e92272626364a710/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
 </div>
 </div>
-<p>Whatever volume you look at, the trend generally maintains. People like rounded numbers and particularly natural numbers.</p>
+<p>Whatever volume you look at, the trend generally maintains. People like rounded numbers and particularly .00 and .50.</p>
 <p>The second shiny is for individual stocks. To keep the dropdown manageable, we limited the options to stocks from the S&amp;P 500, minus the seven companies that did not appear in our dataset.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><iframe data-deferred-src="app8821a858cbed557281a0c7a7c283fe2b/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
+<p><iframe data-deferred-src="app268e9e55f8c66dff45c572607aa0a566/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
 </div>
 </div>
 <p>Thanks for checking out our project! We hope you found it as interesting as we did.</p>
@@ -158,7 +158,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const onCopySuccess = function(e) {
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -190,29 +201,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
   });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -220,7 +209,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {

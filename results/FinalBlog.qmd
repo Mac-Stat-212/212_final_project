@@ -41,11 +41,11 @@ high <- finished_data %>%
   count() %>%
   mutate(cent_price = as.numeric(!!sym(label)) / 100) %>%  # Convert to cent price
   ggplot() +
-  geom_bar(aes(x = cent_price, y = n), stat = "identity") +
+  geom_bar(aes(x = cent_price, y = n), stat = "identity", fill="darkgreen") +
   labs(
     title = paste("Daily highs, last two digits (cent price): 2019-2024"),
     x = "Cent price",
-    y = "Number of Trades"
+    y = "Number of Highs"
   ) +
   theme_minimal() +
   scale_y_continuous(labels = scales::comma) +  # Ensure y-axis values are regular counts
@@ -69,11 +69,11 @@ low <- finished_data %>%
   count() %>%
   mutate(cent_price = as.numeric(!!sym(label)) / 100) %>%  # Convert to cent price
   ggplot() +
-  geom_bar(aes(x = cent_price, y = n), stat = "identity") +
+  geom_bar(aes(x = cent_price, y = n), stat = "identity", fill="darkred") +
   labs(
     title = paste("Daily Lows, last two digits (cent price): 2019-2024"),
     x = "Cent price",
-    y = "Number of Trades"
+    y = "Number of Lows"
   ) +
   theme_minimal() +
   scale_y_continuous(labels = scales::comma) +  # Ensure y-axis values are regular counts
@@ -86,11 +86,11 @@ print(low)
 
 ## Analysis
 
-These graphs present compelling evidence of anchoring bias. There are high peaks at 0 and 50 cents, as well as other round numbers such as multiples of 10 and 25. 
+These graphs present compelling evidence of anchoring bias. There are high peaks at 0 and 50 cents, as well as other round numbers such as multiples of 10 and 25.
 
 If we look closer, another insight we get from these graphs is highs and lows both peak at rounded cent values, but they behave slightly different on how they approach to that peak. When approaching a daily high, traders keep buying until it reaches the 0 value, with lots of trades ending at 99 cents. Instead, when approaching a daily low, traders will buy at .01 and stop buying at .99. This behavior further reinforces the trend, as these barriers act as as support and tension price points.
 
-However, one of the concerns we had was that low volume stocks were driving this behavior. For example, some stocks can be as pricey as $200,000, and those stocks are usually traded at rounded numbers and by very few individuals. Thus, we created two interactive shiny apps to allow users to view the trends of their choice.
+However, one of the concerns we had was that low volume stocks were driving this behavior. For example, some stocks can be as pricey as \$200,000, and those stocks are usually traded at rounded numbers and by very few individuals. Thus, we created two interactive shiny apps to allow users to view the trends of their choice.
 
 First, we divided all stocks into five categories according to their median volume of daily trades. The user can explore the company size, metric and date of their choice.
 
