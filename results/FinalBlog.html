@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.555">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -78,7 +78,7 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="driving-question" class="level2">
 <h2 class="anchored" data-anchor-id="driving-question">Driving Question</h2>
-<p>We came to this project with one simple question: Are there biases that impact the daily highs and lows in which stocks are traded? In theory, stock prices should be random, as firms’ valuations depend on a multitude of factors that are impossible to predict.</p>
+<p>We came to this project with one simple question: are there cognitive biases that impact the daily highs and lows in which stocks are traded? In theory, stock prices should be random, as traders’ valuations depend on a multitude of factors that are impossible to predict.</p>
 <p>However, humans execute transactions and we wondered if there is a tendency for daily high and low prices to cluster around rounded numbers. At first, we thought the best approach would be to investigate the nominal value of a stock. But quickly, we realized stocks’ tendency to trade in values less than 5 dollars was simply because there are more small companies listed in the stock market than larger ones. Then, we came up with the idea of investigating if the last two decimal places of a stock, essentially, its ending cent value, clustered around rounded numbers.</p>
 <p>We extracted data from yahoo finance from 2019 to 2024 and plotted graphs to depict what were the most common ending cent values in which daily lows (Figure 1) and daily highs (Figure 2) encountered.</p>
 <div class="cell">
@@ -108,14 +108,14 @@ ul.task-list li input[type="checkbox"] {
 <p>First, we divided all stocks into five categories according to their median volume of daily trades. The user can explore the company size, metric and date of their choice.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><iframe data-deferred-src="app3c004ea465bd8ee9745a243f89f42fd6/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
+<p><iframe data-deferred-src="app80a45602c63065c70858c87491d18be3/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
 </div>
 </div>
 <p>Whatever volume you look at, the trend generally maintains. People like rounded numbers and particularly .00 and .50.</p>
 <p>The second shiny is for individual stocks. To keep the dropdown manageable, we limited the options to stocks from the S&amp;P 500, minus the seven companies that did not appear in our dataset.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><iframe data-deferred-src="app196957288ebaa9c1504c36f0acb0c7d0/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
+<p><iframe data-deferred-src="appa1737d6a671f2bb936396b9b874bcf40/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
 </div>
 </div>
 <p>Thanks for checking out our project! We hope you found it as interesting as we did.</p>
@@ -158,18 +158,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -201,7 +190,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -209,7 +220,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
