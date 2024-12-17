@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Alan Schulz-Diaz and Wesley Stone">
-<meta name="dcterms.date" content="2024-12-13">
+<meta name="dcterms.date" content="2024-12-17">
 
 <title>Anchoring Bias in the Stock Market</title>
 <style>
@@ -64,7 +64,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">December 13, 2024</p>
+      <p class="date">December 17, 2024</p>
     </div>
   </div>
   
@@ -104,18 +104,18 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="analysis">Analysis</h2>
 <p>These graphs present compelling evidence of anchoring bias. There are high peaks at 0 and 50 cents, as well as other round numbers such as multiples of 10 and 25.</p>
 <p>If we look closer, another insight we get from these graphs is highs and lows both peak at rounded cent values, but they behave slightly different on how they approach to that peak. When approaching a daily high, traders keep buying until it reaches the 0 value, with lots of trades ending at 99 cents. Instead, when approaching a daily low, traders will buy at .01 and stop buying at .99. This behavior further reinforces the trend, as these barriers act as as support and tension price points.</p>
-<p>However, one of the concerns we had was that low volume stocks were driving this behavior. For example, some stocks can be as pricey as $200,000, and those stocks are usually traded at rounded numbers and by very few individuals. Thus, we created two interactive shiny apps to allow users to view the trends of their choice.</p>
+<p>However, one of the concerns we had was that low volume stocks were driving this behavior. For example, some stocks can be as pricey as $200,000, and those stocks are usually traded at rounded numbers and by very few individuals. So we created two interactive shiny apps to allow users to view the trends of their choice.</p>
 <p>First, we divided all stocks into five categories according to their median volume of daily trades. The user can explore the company size, metric and date of their choice.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><iframe data-deferred-src="app80a45602c63065c70858c87491d18be3/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
+<p><iframe data-deferred-src="app469b70e6d6e910b0f30bd0f711a7ffe1/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
 </div>
 </div>
 <p>Whatever volume you look at, the trend generally maintains. People like rounded numbers and particularly .00 and .50.</p>
 <p>The second shiny is for individual stocks. To keep the dropdown manageable, we limited the options to stocks from the S&amp;P 500, minus the seven companies that did not appear in our dataset.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><iframe data-deferred-src="appa1737d6a671f2bb936396b9b874bcf40/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
+<p><iframe data-deferred-src="app22eb301c7f440b25fa0f1e2092a2006f/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
 </div>
 </div>
 <p>Thanks for checking out our project! We hope you found it as interesting as we did.</p>
