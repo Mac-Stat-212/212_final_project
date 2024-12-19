@@ -107,15 +107,24 @@ ul.task-list li input[type="checkbox"] {
 <p>However, one of the concerns we had was that low volume stocks were driving this behavior. For example, some stocks can be as pricey as $200,000, and those stocks are usually traded at rounded numbers and by very few individuals. So we created two interactive shiny apps to allow users to view the trends of their choice.</p>
 <p>First, we divided all stocks into five categories according to their median volume of daily trades. The user can explore the company size, metric and date of their choice.</p>
 <div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tq_index("SP500"): Error at SP500SPY during download. 
+Error in curl::curl_download(spdr_link, tf &lt;- tempfile(fileext = ".xlsx")): Couldn't resolve host name [www.ssga.com]: Could not resolve host: www.ssga.com</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Unknown or uninitialised column: `symbol`.</code></pre>
+</div>
+</div>
+<div class="cell">
 <div class="cell-output-display">
-<p><iframe data-deferred-src="appba8daf026bc25ef92525165fa15f8c3c/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
+<p><iframe data-deferred-src="appa7545243ec27b65ff0cb67a4a51ea8f4/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
 </div>
 </div>
 <p>Whatever volume you look at, the trend generally maintains. People like rounded numbers and particularly .00 and .50.</p>
 <p>The second shiny is for individual stocks. To keep the dropdown manageable, we limited the options to stocks from the S&amp;P 500, minus the seven companies that did not appear in our dataset.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><iframe data-deferred-src="app40b51f63b8bc47c9c1928b1d42bcc8ae/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
+<p><iframe data-deferred-src="app573e3488e6234ac5ecb2e8a9217b1dc0/?w=&amp;__subapp__=1" width="100%" height="400" class="shiny-frame shiny-frame-deferred"></iframe></p>
 </div>
 </div>
 <p>Thanks for checking out our project! We hope you found it as interesting as we did.</p>
